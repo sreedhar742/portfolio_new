@@ -60,29 +60,48 @@ textarea {
   background:
     radial-gradient(
       circle at 26% var(--glow-shift, 58%),
-      rgba(236, 255, 252, 0.98) 0%,
-      rgba(210, 255, 250, 0.88) 14%,
-      rgba(171, 247, 239, 0.46) 28%,
-      rgba(86, 151, 146, 0.16) 42%,
-      rgba(6, 12, 16, 0.02) 58%,
+      var(--tone-core, #e6fff9) 0%,
+      var(--tone-soft, #b2f7ec) 16%,
+      color-mix(in srgb, var(--tone-shadow, #5c8e88) 38%, transparent) 34%,
+      color-mix(in srgb, var(--tone-shadow, #5c8e88) 14%, transparent) 48%,
       transparent 72%
     ),
     radial-gradient(
       circle at 78% var(--top-glow, 12%),
-      rgba(196, 255, 248, 0.16),
-      rgba(79, 134, 131, 0.06) 34%,
+      color-mix(in srgb, var(--tone-top, #a6ece3) 44%, transparent) 0%,
+      color-mix(in srgb, var(--tone-shadow, #5c8e88) 20%, transparent) 34%,
       transparent 60%
     ),
-    linear-gradient(180deg, #02070b 0%, #03090d 40%, #040a10 100%);
-  transform: scale(calc(0.95 + (var(--scroll-progress, 0) * 0.16)));
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tone-deep, #02070b) 88%, #000) 0%,
+      color-mix(in srgb, var(--tone-deep, #02070b) 72%, #041018) 40%,
+      #040a10 100%
+    );
+  transform: scale(
+    calc(0.95 + (var(--scroll-progress, 0) * 0.16) + (var(--mood-bg-scale-boost, 0.12) * 0.12))
+  );
   transform-origin: center;
 }
 
 .portfolio-shell::after {
-  background:
-    radial-gradient(circle at 52% 14%, rgba(255, 255, 255, 0.04), transparent 36%),
-    radial-gradient(circle at 14% 22%, rgba(185, 255, 247, 0.05), transparent 26%);
-  opacity: 0.5;
+  background-image:
+    linear-gradient(
+      165deg,
+      rgba(3, 7, 10, 0.82) 0%,
+      rgba(3, 7, 10, 0.48) 32%,
+      rgba(3, 7, 10, 0.2) 52%,
+      rgba(3, 7, 10, 0.52) 100%
+    ),
+    var(--bg-image-url);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  mix-blend-mode: screen;
+  opacity: calc(0.14 + (var(--scroll-progress, 0) * var(--mood-image-opacity-boost, 0.28)));
+  filter: saturate(1.14) contrast(1.08) blur(0.2px);
+  transform: scale(calc(1 + (var(--scroll-progress, 0) * 0.08)));
+  transform-origin: center;
 }
 
 .top-nav-wrap {
@@ -104,6 +123,32 @@ textarea {
   backdrop-filter: blur(10px);
   border-radius: 18px;
   padding: 10px 12px;
+}
+
+.mood-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(214, 255, 250, 0.06);
+  border: 1px solid rgba(214, 255, 250, 0.12);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.mood-switch button {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mood-switch button.is-active {
+  background: rgba(214, 255, 250, 0.22);
+  color: var(--text);
 }
 
 .brand {
@@ -190,7 +235,30 @@ textarea {
   position: absolute;
   inset: auto -10% -30% 25%;
   height: 72%;
-  background: radial-gradient(ellipse at center, rgba(157, 217, 210, 0.4), rgba(157, 217, 210, 0.15) 45%, transparent 75%);
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--tone-soft, #b2f7ec) calc(var(--mood-hero-glow, 0.3) * 100%), transparent),
+    color-mix(in srgb, var(--tone-shadow, #5c8e88) 16%, transparent) 45%,
+    transparent 75%
+  );
+  pointer-events: none;
+}
+
+.hero-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      170deg,
+      color-mix(in srgb, #000 calc(var(--mood-hero-shade, 0.22) * 100%), transparent) 0%,
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 18% 24%,
+      color-mix(in srgb, var(--tone-top, #a6ece3) 26%, transparent) 0%,
+      transparent 55%
+    );
   pointer-events: none;
 }
 
@@ -306,6 +374,20 @@ textarea {
   min-height: 100%;
   position: relative;
   z-index: 1;
+}
+
+.hero-photo-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--tone-top, #a6ece3) 12%, transparent),
+    transparent 35%,
+    color-mix(in srgb, #000 calc(var(--mood-hero-shade, 0.22) * 78%), transparent) 100%
+  );
+  pointer-events: none;
 }
 
 .hero-photo-card img {
@@ -1081,6 +1163,15 @@ textarea {
   .resume-pill {
     align-self: stretch;
     text-align: center;
+  }
+
+  .mood-switch {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mood-switch button {
+    flex: 1;
   }
 
   .page-content,

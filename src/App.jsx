@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import chroma from 'chroma-js';
+import { FastAverageColor } from 'fast-average-color';
 
 const navItems = [
   { id: 'home', label: 'Home' },
@@ -9,6 +11,27 @@ const navItems = [
 ];
 
 const roles = ['Backend Developer', 'FastAPI + Django Engineer', 'Microservices Builder'];
+
+const moodProfiles = {
+  soft: {
+    bgScaleBoost: 0.12,
+    imageOpacityBoost: 0.28,
+    heroShadeStrength: 0.22,
+    heroGlowStrength: 0.3
+  },
+  bold: {
+    bgScaleBoost: 0.2,
+    imageOpacityBoost: 0.42,
+    heroShadeStrength: 0.34,
+    heroGlowStrength: 0.44
+  },
+  glass: {
+    bgScaleBoost: 0.16,
+    imageOpacityBoost: 0.34,
+    heroShadeStrength: 0.18,
+    heroGlowStrength: 0.24
+  }
+};
 
 const skillBlocks = [
   {
@@ -185,6 +208,14 @@ function App() {
   const [selectedWork, setSelectedWork] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showAllHeroLinks, setShowAllHeroLinks] = useState(false);
+  const [themeMood, setThemeMood] = useState('soft');
+  const [dynamicGradient, setDynamicGradient] = useState({
+    core: '#e6fff9',
+    soft: '#b2f7ec',
+    shadow: '#5c8e88',
+    top: '#a6ece3',
+    deep: '#02070b'
+  });
 
   useEffect(() => {
     const onScroll = () => {
@@ -205,6 +236,38 @@ function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    let alive = true;
+    const fac = new FastAverageColor();
+    const imageSource = '/assets/img/premium-gradient-source.jpeg';
+
+    fac
+      .getColorAsync(imageSource, { algorithm: 'dominant' })
+      .then((result) => {
+        if (!alive) return;
+        const base = chroma(result.hex).saturate(0.8);
+        const bright = base.brighten(2.8);
+        const soft = base.brighten(1.6);
+        const shadow = base.darken(1.7);
+        const deep = chroma.mix('#02070b', shadow, 0.72, 'lab');
+        setDynamicGradient({
+          core: bright.hex(),
+          soft: soft.hex(),
+          shadow: shadow.hex(),
+          top: chroma.mix(soft, '#d9fff9', 0.52, 'lab').hex(),
+          deep: deep.hex()
+        });
+      })
+      .catch(() => {
+        // Keep fallback tones if extraction fails.
+      });
+
+    return () => {
+      alive = false;
+      fac.destroy();
+    };
+  }, []);
+
   const onContactSubmit = (e) => {
     e.preventDefault();
     const subject = encodeURIComponent(formData.subject || 'Portfolio Contact');
@@ -216,6 +279,7 @@ function App() {
 
   const profileImage = '/assets/img/profile-photo.jpg';
   const activeWorkItem = workItems[selectedWork];
+  const activeMood = moodProfiles[themeMood];
   const heroLinks = [
     {
       href: 'https://www.linkedin.com/in/sreedhar742/',
@@ -243,13 +307,23 @@ function App() {
 
   return (
     <div
-      className="portfolio-shell"
+      className={`portfolio-shell mood-${themeMood}`}
       style={
         {
           '--scroll-progress': scrollProgress,
-          '--glow-size': `${32 + scrollProgress * 24}%`,
-          '--glow-shift': `${58 - scrollProgress * 20}%`,
-          '--top-glow': `${12 + scrollProgress * 10}%`
+          '--glow-size': `${30 + scrollProgress * 34}%`,
+          '--glow-shift': `${62 - scrollProgress * 23}%`,
+          '--top-glow': `${10 + scrollProgress * 18}%`,
+          '--tone-core': dynamicGradient.core,
+          '--tone-soft': dynamicGradient.soft,
+          '--tone-shadow': dynamicGradient.shadow,
+          '--tone-top': dynamicGradient.top,
+          '--tone-deep': dynamicGradient.deep,
+          '--bg-image-url': 'url("/assets/img/premium-gradient-source.jpeg")',
+          '--mood-bg-scale-boost': activeMood.bgScaleBoost,
+          '--mood-image-opacity-boost': activeMood.imageOpacityBoost,
+          '--mood-hero-shade': activeMood.heroShadeStrength,
+          '--mood-hero-glow': activeMood.heroGlowStrength
         }
       }
     >
@@ -263,6 +337,18 @@ function App() {
               <a key={item.id} href={`#${item.id}`} className={activeSection === item.id ? 'is-active' : ''}>
                 {item.label}
               </a>
+            ))}
+          </div>
+          <div className="mood-switch" role="tablist" aria-label="Theme mood">
+            {Object.keys(moodProfiles).map((mood) => (
+              <button
+                key={mood}
+                type="button"
+                className={themeMood === mood ? 'is-active' : ''}
+                onClick={() => setThemeMood(mood)}
+              >
+                {mood.charAt(0).toUpperCase() + mood.slice(1)}
+              </button>
             ))}
           </div>
           <a className="resume-pill" href="/assets/resume/update_sreedhar_resume.pdf" target="_blank" rel="noreferrer">
