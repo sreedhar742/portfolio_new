@@ -8,41 +8,42 @@ const navItems = [
   { id: 'contact', label: 'Contact' }
 ];
 
-const roles = ['Backend Developer', 'FastAPI + Django Engineer', 'Microservices Builder'];
+const roles = ['Full Stack Developer', 'Django + FastAPI Engineer', 'React + TypeScript Frontends'];
 
 const skillBlocks = [
   {
     title: 'Backend',
-    items: ['FastAPI', 'Django', 'Django REST Framework', 'Django Channels', 'Celery', 'Redis']
+    items: ['Django', 'Django REST Framework', 'FastAPI', 'Django Channels', 'Celery', 'SQLAlchemy']
   },
   {
-    title: 'Cloud & Infra',
-    items: ['AWS ECS/Fargate', 'ECR', 'EC2', 'ALB', 'DigitalOcean', 'Nginx', 'Docker', 'Linux']
+    title: 'Frontend',
+    items: ['React', 'TypeScript', 'Vite', 'Tailwind', 'Bun']
   },
   {
-    title: 'Architecture',
-    items: ['Microservices', 'JWT/RBAC', 'WebSockets', 'Async I/O', 'API Versioning', 'Caching']
+    title: 'Data & Caching',
+    items: ['PostgreSQL', 'MySQL', 'Redis', 'PgBouncer', 'Django ORM']
   },
   {
-    title: 'Data & Tools',
-    items: ['PostgreSQL', 'MySQL', 'MongoDB', 'GitHub Actions', 'Git', 'React (integration)']
+    title: 'Infra & CI/CD',
+    items: ['Docker', 'Kubernetes', 'Nginx', 'AWS (EC2, S3, Lambda, RDS, DynamoDB)', 'DigitalOcean', 'GitHub Actions']
   }
 ];
 
 const experienceHighlights = [
   {
-    role: 'Backend Developer',
-    period: 'Sep 2024 - Present',
-    company: 'Orcalex Technologies LLP, Bangalore',
+    role: 'Full Stack Developer',
+    period: 'Nov 2024 - Present',
+    company: 'Orcalex Technologies LLP, Hyderabad, India',
     points: [
-      'Architected multi-tenant Django backend with JWT authentication and RBAC for School Admin, Teacher, and Student personas',
-      'Built real-time notification delivery using Django Channels + Redis Pub/Sub with sub-second WebSocket updates',
-      'Designed async FastAPI microservices with Pydantic validation and OpenAPI docs',
-      'Implemented caching and background lazy-loading jobs improving API response performance by 35%',
-      'Built Celery + Redis task queues for messaging, analytics processing, and scheduled automation jobs',
-      'Decomposed platform into 6+ deployable services with versioned API contracts and inter-service JWT validation',
-      'Containerized and deployed workloads on AWS ECR/ECS/Fargate with ALB, VPC and autoscaling',
-      'Built GitHub Actions CI/CD pipelines for linting, testing, Docker builds, ECR pushes and deployments'
+      'Engineer SmartLearners.ai / AiEducator, a multi-school EdTech platform serving 10k+ students across schools (B2B) and individual learners (B2C), on Django/DRF, FastAPI and React',
+      'Built the auth layer for admin, school-admin, teacher and student roles: header JWT for mobile clients, cookie auth for web, OAuth/OIDC sign-in, and JWT-authenticated WebSockets',
+      'Developed the live classroom module where homework and scheduled exams persist to the database, push to online students over WebSockets, and replay as unread notifications when offline students reconnect',
+      'Fixed a cache stampede on that path - one expiring Redis key sent ~500 reconnecting students to the database - with double-checked locking, collapsing the burst into a single query',
+      'Shipped the question bank, worksheet and scheduled-assignment workflows, owning the REST APIs and the React state behind them',
+      'Grew AI evaluation from a single autoscore service to four - autoscore, homework, classwork and exam correction - dispatching uploads over Celery and persisting scores, gap analysis and class analytics as domain state',
+      'Cut API response times ~30% with EXPLAIN ANALYZE profiling, composite indexes, and Redis caching over optimized ORM queries',
+      'Wrote unit and integration tests that gate every PR, with main deploying to staging and tags promoting to production',
+      'Operate production on DigitalOcean Kubernetes (HTTP, WebSocket, Celery worker and beat deployments, plus FastAPI exam-correction workers) and on Linux VMs behind Nginx, with PgBouncer pooling Postgres connections'
     ]
   }
 ];
@@ -50,34 +51,55 @@ const experienceHighlights = [
 const workItems = [
   {
     category: 'Current Product',
-    title: 'AidEducator.com',
-    tech: 'FastAPI, Django, Channels, PostgreSQL, Redis, Celery, React',
+    title: 'SmartLearners.ai / AiEducator',
+    tech: 'Django REST Framework, Celery, Redis, PostgreSQL, React',
     summary:
-      'Enterprise education platform for 10+ institutions (B2B) and individual learners (B2C) with microservice architecture across auth, CRM, exams, payments and notifications.',
-    metric: '60% less manual effort',
-    link: 'https://aideducator.com',
+      'Multi-school EdTech platform serving 10k+ students across institutions (B2B) and individual learners (B2C), migrated from a single-school system into a multi-tenant one without downtime.',
+    metric: '10k+ students',
+    link: 'https://smartlearners.ai',
     tone: 'ivory',
     details: [
-      'Built and maintained backend services across auth, CRM, exams, payments, and notifications.',
-      'Supported enterprise + individual learner flows (B2B/B2C) in a production environment.',
-      'Integrated async processing and automation for exam correction and engagement workflows.',
-      'Worked on scalable service integrations and real-time capabilities with modern backend tooling.'
+      'Migrated the platform from single-school with boolean role flags to multi-school, multi-section, role-scoped access.',
+      'Ran those schema changes with zero downtime: nullable columns first, dual-write from the application, batched backfill, then NOT NULL.',
+      'Resolved every request to an authorized school set - platform admin, school admin, or multi-school manager - before any read or write.',
+      'Made every bulk and destructive operation dry-run first, with per-row validation and structured errors before commit.',
+      'Cached school reads under role-aware versioned keys, so one version bump invalidates a whole tenant cache without scanning keys.',
+      'Moved question and answer images from database rows into object storage with Django-generated presigned uploads.',
+      'Integrated PhonePe payments end to end: order creation, webhook verification, status polling, retry, refund and activation.'
     ]
   },
   {
     category: 'Current Product',
-    title: 'SmartLearners.ai',
-    tech: 'FastAPI, Django REST Framework, MySQL, Redis, React',
+    title: 'Exam Correction Service',
+    tech: 'FastAPI, SQLAlchemy, Django, Celery, Redis, PostgreSQL',
     summary:
-      'Scalable learning management platform with async processing, caching layers, and automation pipelines for analytics reporting and student progress tracking.',
-    metric: 'Async + caching driven',
-    link: 'https://smartlearners.ai',
+      'Standalone FastAPI evaluation service orchestrated by Django over Celery, correcting subjective and objective answer sheets in group and single-student modes.',
+    metric: '50 students / run',
+    link: '',
     tone: 'ocean',
     details: [
-      'Designed backend APIs and async workflows for analytics and student progress tracking.',
-      'Implemented caching-focused patterns to improve responsiveness under repeated access.',
-      'Supported automation pipelines for reporting and platform operations.',
-      'Worked with Django/FastAPI ecosystem components and frontend API integrations.'
+      'Built the runtime and data-persistence layer for group (up to 50 students) and single-student correction runs.',
+      'Kept all identity in Django: the service holds no auth, uploads results to object storage, and posts to a webhook that persists them for the owning teacher only.',
+      'Designed the lifecycle around one idempotency key shared by Django, Celery and FastAPI, with teachers seeing live phase and percent complete.',
+      'Defined the bi-directional webhook contracts and a batch-recovery API that restores in-flight corrections after logout or refresh.',
+      'Normalized and matched roll numbers so only verified students persist, keeping token usage, cost and unmatched rolls in an admin-only audit model.'
+    ]
+  },
+  {
+    category: 'Current Product',
+    title: 'Coordinator Admin Dashboard',
+    tech: 'React, TypeScript, Vite, Tailwind, Bun',
+    summary:
+      'School-admin dashboard built solo in TypeScript, covering school data, student and teacher management, class-section access, reassignment, archival and record merging.',
+    metric: '9 admin panels',
+    link: '',
+    tone: 'gold',
+    details: [
+      'Sole developer of a nine-panel dashboard in React and TypeScript, built with Bun and Vite.',
+      'Gated every destructive action behind a dry-run preview whose approval signature must match before the commit is allowed.',
+      'Implemented dual JWT/cookie auth with single-flight token refresh and mode-aware session storage.',
+      'Wrote the CSV parser and serializer by hand for bulk import and credential export.',
+      'Built the GitHub Actions pipeline: config validation, lint, build, then rsync deploy to the VM with an Nginx validate-and-reload step.'
     ]
   },
   {
@@ -88,7 +110,7 @@ const workItems = [
       'Personal portfolio redesigned into a clean card-based UI for static deployment pipelines (Cloudflare Pages ready).',
     metric: 'Cloudflare-ready build',
     link: 'https://github.com/sreedhar742/portfolio',
-    tone: 'gold',
+    tone: 'glacier',
     details: [
       'Migrated an older Django template-based portfolio into a React + Vite static application.',
       'Designed a card-first UI with responsive layout, smooth sections, and clean information grouping.',
@@ -104,7 +126,7 @@ const workItems = [
       'User feedback collection system built during earlier Django work, focused on form flows, ORM-driven persistence, and basic reporting workflows.',
     metric: 'ORM + forms',
     link: 'https://github.com/sreedhar742/feedback_system_using_django_framework',
-    tone: 'glacier',
+    tone: 'lagoon',
     details: [
       'Built feedback submission and collection workflows with Django forms and models.',
       'Used Django ORM for database operations and retrieval patterns.',
@@ -120,7 +142,7 @@ const workItems = [
       'Django-based reservation workflow project with booking-oriented UI interactions and backend data handling for train reservation scenarios.',
     metric: 'End-to-end CRUD',
     link: 'https://github.com/sreedhar742/railway_reservation_system',
-    tone: 'lagoon',
+    tone: 'ember',
     details: [
       'Created booking-oriented backend flows with Django for reservation management scenarios.',
       'Handled CRUD operations and model relations for core reservation data.',
@@ -136,7 +158,7 @@ const workItems = [
       'Blog platform integrating Django backend and React frontend, with API-based content flow and frontend rendering patterns.',
     metric: 'Django + React',
     link: 'https://github.com/sreedhar742/Django_IT_Blogs',
-    tone: 'ember',
+    tone: 'ivory',
     details: [
       'Combined Django backend and React frontend for a content/blog platform.',
       'Used REST APIs for content delivery and frontend rendering.',
@@ -214,7 +236,6 @@ function App() {
     window.location.href = `mailto:psridhar742@gmail.com?subject=${subject}&body=${body}`;
   };
 
-  const profileImage = '/assets/img/profile-photo.jpg';
   const activeWorkItem = workItems[selectedWork];
   const heroLinks = [
     {
@@ -275,11 +296,13 @@ function App() {
         <section id="home" className="hero-grid">
           <div className="hero-main card ivory-card">
             <div className="hero-copy">
-              <p className="eyebrow">PEDDA PULLANNAGARI SREEDHAR</p>
-              <h1>Backend systems, built for scale and production.</h1>
+              <h1>Pedda Pullannagari Sreedhar</h1>
               <p className="hero-summary">
-                Backend Developer with 1.5+ years of experience building scalable microservices and enterprise B2B/B2C
-                systems using FastAPI and Django, with real-time systems, async processing, and cloud deployments.
+                Full stack developer building platforms end to end &mdash; database design, Django and FastAPI APIs,
+                React and TypeScript interfaces, and production deployment.
+              </p>
+              <p className="hero-location">
+                Hyderabad, India · Open to full stack and backend engineering roles
               </p>
               <div className="typed-row">
                 <span className="typed-label">Role</span>
@@ -295,32 +318,9 @@ function App() {
                 </a>
               </div>
             </div>
-            <div className="hero-photo-card">
-              <img
-                src={profileImage}
-                alt="Sreedhar portrait"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = '/assets/img/slide.jpg';
-                }}
-              />
-              <div className="photo-caption">
-                <span>Sreedhar</span>
-                <small>Backend Developer • FastAPI • Django • Cloud Deployments</small>
-              </div>
-            </div>
           </div>
 
           <div className="hero-side-stack">
-            <div className="card accent-card accent-teal">
-              <h3>Current Focus</h3>
-              <p>FastAPI, Django, Celery, Redis, AWS ECS/Fargate, CI/CD pipelines.</p>
-            </div>
-            <div className="card accent-card accent-gold">
-              <h3>Location</h3>
-              <p>Hyderabad, Begumpet</p>
-              <p className="tiny">Open to backend and platform engineering roles</p>
-            </div>
             <div className="card accent-card accent-orange">
               <h3>Connect</h3>
               <div className="hero-contact-links">
@@ -351,11 +351,12 @@ function App() {
         <section id="about" className="content-section">
           <div className="section-header">
             <p className="eyebrow">About Me</p>
-            <h2>Backend engineer focused on reliable APIs, real-time systems, and cloud deployment.</h2>
+            <h2>Full stack engineer focused on multi-tenant backends, real-time delivery, and safe schema change.</h2>
             <p>
-              I build backend systems with FastAPI and Django for production use-cases, including microservices,
-              background processing, real-time notifications, and CI/CD-driven deployments. I enjoy designing systems
-              that are maintainable, scalable, and practical for business teams.
+              I build production systems end to end - Django and FastAPI services, the React and TypeScript
+              interfaces on top of them, and the pipelines that ship both. Most of my work is about keeping a
+              multi-tenant platform correct while it changes: idempotent workflows, cached read paths, role-scoped
+              access, and schema migrations that run without downtime.
             </p>
           </div>
 
@@ -364,10 +365,10 @@ function App() {
         <section id="experience" className="content-section">
           <div className="section-header">
             <p className="eyebrow">Experience</p>
-            <h2>Production backend engineering at Orcalex Technologies</h2>
+            <h2>Full stack engineering at Orcalex Technologies</h2>
             <p>
-              FastAPI and Django services, real-time notifications, task queues, cloud deployment, and CI/CD automation
-              for enterprise products.
+              Django and FastAPI services, React frontends, real-time delivery, AI service integration, zero-downtime
+              migrations, and the CI/CD that promotes them to production.
             </p>
           </div>
 
@@ -376,8 +377,8 @@ function App() {
               <div className="card panel panel-glacier">
                 <h3>Professional Summary</h3>
                 <p>
-                  Backend Developer with 1.5+ years of experience building scalable microservices and enterprise
-                  B2B/B2C systems using FastAPI and Django.
+                  Full Stack Developer focused on backend systems that stay correct under load, with React and
+                  TypeScript on the frontend.
                 </p>
                 <ul className="meta-list">
                   <li>
@@ -440,8 +441,8 @@ function App() {
             <p className="eyebrow">Work</p>
             <h2>Enterprise product work and earlier projects</h2>
             <p>
-              A mix of current production platforms and earlier Django-based projects that show my growth from full-stack
-              fundamentals to backend and platform engineering.
+              Current production work on a multi-school EdTech platform, plus earlier Django projects that show the
+              path from full-stack fundamentals to platform engineering.
             </p>
           </div>
           <div className="work-showcase">
@@ -498,9 +499,11 @@ function App() {
                 </ul>
               </div>
 
-              <a href={activeWorkItem.link} target="_blank" rel="noreferrer" className="project-link">
-                Open link <i className="bi bi-arrow-up-right" />
-              </a>
+              {activeWorkItem.link ? (
+                <a href={activeWorkItem.link} target="_blank" rel="noreferrer" className="project-link">
+                  Open link <i className="bi bi-arrow-up-right" />
+                </a>
+              ) : null}
             </article>
           </div>
         </section>
@@ -509,9 +512,9 @@ function App() {
           <div className="contact-card card">
             <div className="contact-left">
               <p className="eyebrow">Contact</p>
-              <h2>Let’s build reliable backend systems.</h2>
+              <h2>Let’s build systems that stay correct under load.</h2>
               <p>
-                Reach out for backend engineering, API platform work, microservices architecture, or deployment
+                Reach out for full stack or backend engineering, API and platform work, or deployment
                 automation.
               </p>
             </div>
